@@ -1,5 +1,5 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Divider, message, Select, Popconfirm, Cascader, Form } from 'antd';
+import { Button, Divider, message, Select, Popconfirm, Cascader } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
@@ -23,16 +23,20 @@ const { Option } = Select;
  * @param fields
  */
 const handleAdd = async (fields: TableListItem) => {
+  console.log(fields);
   const hide = message.loading('正在添加');
   try {
     const [group, category] = fields.category || [];
 
+    const image: string = fields.image[0].response?.data.file_name as string;
     const slide: Array<string> = [];
-    fields.image.fileList.map((value) => slide.push(value.response.data.file_name));
+    fields.slide.map(
+      (value) => value.response !== undefined && slide.push(value.response.data.file_name),
+    );
 
     await addRule({
       ...fields,
-      image: fields.image.file.response.data.file_name,
+      image,
       slide,
       group,
       category,
@@ -43,6 +47,7 @@ const handleAdd = async (fields: TableListItem) => {
     message.success('添加成功');
     return true;
   } catch (error) {
+    console.log(error);
     hide();
     message.error('添加失败请重试！');
     return false;
@@ -199,14 +204,6 @@ const TableList: React.FC<{}> = () => {
           message: '请上传封面图',
         },
       ],
-      getValueFromEvent: (e) => {
-        if (!e || !e.fileList) {
-          return e;
-        }
-
-        const { fileList } = e;
-        return fileList;
-      },
       renderFormItem: (item) => <CoverImage name={item.dataIndex as string} />,
     },
     {
@@ -221,6 +218,8 @@ const TableList: React.FC<{}> = () => {
       title: '排序权重',
       dataIndex: 'sort',
       valueType: 'digit',
+      hideInSearch: true,
+      hideInTable: true,
       formItemProps: {
         value: 0,
       },
@@ -278,14 +277,14 @@ const TableList: React.FC<{}> = () => {
       hideInTable: true,
       hideInSearch: true,
     },
-    // {
-    //   title: '截图',
-    //   dataIndex: 'slide',
-    //   valueType: 'avatar',
-    //   hideInSearch: true,
-    //   hideInTable: true,
-    //   renderFormItem: () => <PicturesWall name="image" id="slide" />,
-    // },
+    {
+      title: '截图',
+      dataIndex: 'slide',
+      valueType: 'avatar',
+      hideInSearch: true,
+      hideInTable: true,
+      renderFormItem: (item) => <PicturesWall name={item.dataIndex as string} />,
+    },
     {
       title: '修改时间',
       dataIndex: 'updated_at',

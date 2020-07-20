@@ -11,7 +11,7 @@ function getBase64(file: File | Blob) {
   });
 }
 
-export default class PicturesWall extends React.Component<{ id: string; name: string }> {
+export default class PicturesWall extends React.Component<{ name: string }> {
   state = {
     previewVisible: false,
     previewImage: '',
@@ -47,7 +47,6 @@ export default class PicturesWall extends React.Component<{ id: string; name: st
       <div className="clearfix">
         <Form.Item name={this.props.name}>
           <Upload
-            id={this.props.id}
             action="/api/upload"
             listType="picture-card"
             fileList={fileList}
@@ -63,7 +62,7 @@ export default class PicturesWall extends React.Component<{ id: string; name: st
           footer={null}
           onCancel={this.handleCancel}
         >
-          <img style={{ width: '100%' }} src={previewImage} />
+          <img alt="封面图预览" style={{ width: '100%' }} src={previewImage} />
         </Modal>
       </div>
     );

@@ -37,10 +37,8 @@ export interface TableListItem {
   status: boolean;
   sort: number;
   title: string;
-  image: {
-    file: UploadFile;
-    fileList: UploadFile[];
-  };
+  image: UploadFile<{data: {file_name: string, url: string}, code: number, message: string}>[];
+  slide: UploadFile<{data: {file_name: string, url: string}, code: number, message: string}>[];
   category: Array<number>;
   version: string;
   language: number;
