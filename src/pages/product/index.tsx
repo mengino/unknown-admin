@@ -1,5 +1,5 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Divider, message, InputNumber, Form, Select, Popconfirm, Cascader } from 'antd';
+import { Button, Divider, message, Select, Popconfirm, Cascader, Form } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
@@ -199,19 +199,39 @@ const TableList: React.FC<{}> = () => {
           message: '请上传封面图',
         },
       ],
-      renderFormItem: () => <CoverImage name="image" />,
+      getValueFromEvent: (e) => {
+        if (!e || !e.fileList) {
+          return e;
+        }
+
+        const { fileList } = e;
+        return fileList;
+      },
+      renderFormItem: (item) => <CoverImage name={item.dataIndex as string} />,
     },
     {
       title: '排序权重',
       dataIndex: 'sort',
       valueType: 'digit',
       hideInSearch: true,
+      hideInForm: true,
       sorter: true,
-      renderFormItem: () => (
-        <Form.Item name="sort">
-          <InputNumber style={{ width: '100%' }} min={0} />
-        </Form.Item>
-      ),
+    },
+    {
+      title: '排序权重',
+      dataIndex: 'sort',
+      valueType: 'digit',
+      formItemProps: {
+        value: 0,
+      },
+      rules: [
+        {
+          message: '请输入大于0的整数',
+          pattern: /^[+]{0,1}\d+/,
+          min: 0,
+        },
+      ],
+      getValueFromEvent: (value) => (value < 0 || value === '-' ? undefined : parseInt(value, 10)),
     },
     {
       title: '版本号',
@@ -223,17 +243,15 @@ const TableList: React.FC<{}> = () => {
       dataIndex: 'language',
       hideInSearch: true,
       renderFormItem: () => (
-        <Form.Item name="language">
-          <Select style={{ width: '100%' }} placeholder="请选择语言">
-            {language.map((element) => {
-              return (
-                <Option key={element.value} value={element.value}>
-                  {element.label}
-                </Option>
-              );
-            })}
-          </Select>
-        </Form.Item>
+        <Select style={{ width: '100%' }} placeholder="请选择语言">
+          {language.map((element) => {
+            return (
+              <Option key={element.value} value={element.value}>
+                {element.label}
+              </Option>
+            );
+          })}
+        </Select>
       ),
     },
     {
@@ -260,14 +278,14 @@ const TableList: React.FC<{}> = () => {
       hideInTable: true,
       hideInSearch: true,
     },
-    {
-      title: '截图',
-      dataIndex: 'slide',
-      valueType: 'avatar',
-      hideInSearch: true,
-      hideInTable: true,
-      renderFormItem: () => <PicturesWall name="image" id="slide" />,
-    },
+    // {
+    //   title: '截图',
+    //   dataIndex: 'slide',
+    //   valueType: 'avatar',
+    //   hideInSearch: true,
+    //   hideInTable: true,
+    //   renderFormItem: () => <PicturesWall name="image" id="slide" />,
+    // },
     {
       title: '修改时间',
       dataIndex: 'updated_at',

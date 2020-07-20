@@ -2,6 +2,7 @@ import React from 'react';
 import { Upload, message, Form } from 'antd';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload';
+import { UploadFile } from 'antd/lib/upload/interface';
 
 function getBase64(img: File | Blob, callback: (imageUrl: string | ArrayBuffer | null) => void) {
   const reader = new FileReader();
@@ -34,12 +35,12 @@ export default class CoverImage extends React.Component<{ name: string }> {
     }
     if (info.file.status === 'done') {
       // Get this url from response in real world.
-      getBase64(info.file.originFileObj as File | Blob, imageUrl =>
+      getBase64(info.file.originFileObj as File | Blob, (imageUrl) => {
         this.setState({
           imageUrl,
           loading: false,
-        }),
-      );
+        });
+      });
     }
   };
 
@@ -52,9 +53,7 @@ export default class CoverImage extends React.Component<{ name: string }> {
     );
     const { imageUrl } = this.state;
     return (
-      <Form.Item
-        name={this.props.name}
-      >
+      <Form.Item noStyle name={this.props.name} valuePropName="fileList" initialValue={[]}>
         <Upload
           listType="picture-card"
           className="image-uploader"
@@ -64,7 +63,11 @@ export default class CoverImage extends React.Component<{ name: string }> {
           beforeUpload={beforeUpload}
           onChange={this.handleChange}
         >
-          {imageUrl ? <img src={imageUrl} style={{ width: '100%' }} /> : uploadButton}
+          {imageUrl ? (
+            <img alt="封面图预览" src={imageUrl} style={{ width: '100%' }} />
+          ) : (
+            uploadButton
+          )}
         </Upload>
       </Form.Item>
     );

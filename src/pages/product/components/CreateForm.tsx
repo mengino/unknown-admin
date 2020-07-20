@@ -1,5 +1,6 @@
 import React from 'react';
 import { Modal } from 'antd';
+import styles from '../index.less';
 
 interface CreateFormProps {
   modalVisible: boolean;
@@ -16,6 +17,7 @@ const CreateForm: React.FC<CreateFormProps> = (props) => {
       visible={modalVisible}
       onCancel={() => onCancel()}
       footer={null}
+      className={styles.createForm}
     >
       {props.children}
     </Modal>
