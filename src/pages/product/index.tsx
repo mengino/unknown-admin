@@ -1,37 +1,22 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Divider, message, InputNumber, Form, Select, Popconfirm } from 'antd';
+import { Button, Divider, message, InputNumber, Form, Select, Popconfirm, Cascader } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
 import { CascaderOptionType } from 'antd/lib/cascader';
 
+import { queryRule as categoryQuery } from '@/pages/category/service';
+import { TableListItem as categoryTableListItem } from '@/pages/category/data';
+
 import CreateForm from './components/CreateForm';
 import UpdateForm from './components/UpdateForm';
-import LazyOptions from './components/LazyOptions';
 import CoverImage from './components/CoverUpload';
 import PicturesWall from './components/SlideUpload';
 
 import { TableListItem, TableListParams } from './data';
 import { queryRule, updateRule, addRule, removeRule } from './service';
 
-import { queryRule as categoryQuery } from '@/pages/category/service';
-import { TableListItem as categoryTableListItem } from '@/pages/category/data'
-
-
 const { Option } = Select;
-
-// const category = [
-//   {
-//     value: 1,
-//     label: '游戏',
-//     isLeaf: false,
-//   },
-//   {
-//     value: 2,
-//     label: '软件',
-//     isLeaf: false,
-//   },
-// ];
 
 /**
  * 添加节点
@@ -119,57 +104,60 @@ const handleRemove = async (selectedRows: TableListItem[]) => {
 };
 
 const TableList: React.FC<{}> = () => {
-  // let { data } = await queryRule({filter: {}});
-  // console.log(data)
-  const [category, setCategory] = useState<CascaderOptionType[]>([]);
+  const [category, setCategory] = useState<CascaderOptionType[]>([
+    {
+      value: 1,
+      label: '游戏',
+      children: [],
+    },
+    {
+      value: 2,
+      label: '软件',
+      children: [],
+    },
+  ]);
+
+  const [language] = useState([
+    {
+      value: 1,
+      label: '简体中文',
+    },
+    {
+      value: 2,
+      label: '繁体中文',
+    },
+    {
+      value: 3,
+      label: '英文',
+    },
+    {
+      value: 4,
+      label: '日文',
+    },
+    {
+      value: 5,
+      label: '韩文',
+    },
+    {
+      value: 6,
+      label: '俄语',
+    },
+  ]);
 
   useEffect(() => {
     const fetchData = async () => {
-      let categoryData = [
-        {
-          value: 1,
-          label: '游戏',
-          isLeaf: false,
-        },
-        {
-          value: 2,
-          label: '软件',
-          isLeaf: false,
-        },
-      ];
-
       const { data } = await categoryQuery();
 
-
       data.forEach((element: categoryTableListItem) => {
-        if (element.group) {
-
-        }
-
+        category[element.group - 1].children?.push({
+          value: element.id,
+          label: element.name,
+        });
       });
 
-
-
-
-      console.log(data);
-      setCategory(data);
+      setCategory(category);
     };
-    // async function fetchData() {
-    //   const { data } = await categoryQuery();
-    //   setCategory(data);
-    //   // setCategory([
-    //   //   {
-    //   //     value: 1,
-    //   //     label: '游戏',
-    //   //     isLeaf: false,
-    //   //   },
-    //   //   {
-    //   //     value: 2,
-    //   //     label: '软件',
-    //   //     isLeaf: false,
-    //   //   },
-    //   // ]);
-    // }
+
     fetchData();
   }, []);
 
@@ -198,9 +186,7 @@ const TableList: React.FC<{}> = () => {
           message: '归属类别为必选项',
         },
       ],
-      renderFormItem: () => (
-        <LazyOptions name="category" placeholder="请选择分类" options={category} />
-      ),
+      renderFormItem: () => <Cascader options={category} placeholder="请选择分类" />,
     },
     {
       title: '封面图',
@@ -239,11 +225,13 @@ const TableList: React.FC<{}> = () => {
       renderFormItem: () => (
         <Form.Item name="language">
           <Select style={{ width: '100%' }} placeholder="请选择语言">
-            <Option value={1}>简体中文</Option>
-            <Option value={2}>繁体中文</Option>
-            <Option value={3}>英文</Option>
-            <Option value={4}>日文</Option>
-            <Option value={5}>韩文</Option>
+            {language.map((element) => {
+              return (
+                <Option key={element.value} value={element.value}>
+                  {element.label}
+                </Option>
+              );
+            })}
           </Select>
         </Form.Item>
       ),
