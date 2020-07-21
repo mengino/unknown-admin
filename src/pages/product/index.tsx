@@ -426,6 +426,7 @@ const TableList: React.FC<{}> = () => {
           }}
           updateModalVisible={updateModalVisible}
           values={stepFormValues}
+          category={category}
         />
       ) : null}
     </PageContainer>

@@ -1,4 +1,4 @@
-import { Query } from '@/services/base';
+// import { Query } from '@/services/base';
 import { UploadFile } from 'antd/lib/upload/interface';
 
 export interface TableListParams {
@@ -37,8 +37,9 @@ export interface TableListItem {
   status: boolean;
   sort: number;
   title: string;
-  image: UploadFile<{data: {file_name: string, url: string}, code: number, message: string}>[];
-  slide: UploadFile<{data: {file_name: string, url: string}, code: number, message: string}>[];
+  image: UploadFile<{ data: { file_name: string; url: string }; code: number; message: string }>[];
+  slide: UploadFile<{ data: { file_name: string; url: string }; code: number; message: string }>[];
+  group: 1 | 2;
   category: Array<number>;
   version: string;
   language: number;

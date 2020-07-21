@@ -1,35 +1,30 @@
 import React, { useState } from 'react';
-import { Form, Button, Input, Modal, Select } from 'antd';
+import { Form, Button, DatePicker, Input, Modal, Radio, Select, Steps, Cascader } from 'antd';
+import { CascaderOptionType } from 'antd/lib/cascader';
+import { TableListItem } from '../data.d';
 
-import LazyOptions from './LazyOptions';
-
-import { TableListItem } from '../data';
+export interface FormValueType extends Partial<TableListItem> {
+  target?: string;
+  template?: string;
+  type?: string;
+  time?: string;
+  frequency?: string;
+}
 
 export interface UpdateFormProps {
-  onCancel: (flag?: boolean, formVals?: Partial<TableListItem>) => void;
-  onSubmit: (values: Partial<TableListItem>) => void;
+  onCancel: (flag?: boolean, formVals?: FormValueType) => void;
+  onSubmit: (values: FormValueType) => void;
   updateModalVisible: boolean;
   values: Partial<TableListItem>;
+  category: CascaderOptionType[];
 }
 const FormItem = Form.Item;
-const { TextArea } = Input;
+const { Step } = Steps;
 const { Option } = Select;
-
-const category = [
-  {
-    value: 1,
-    label: '游戏',
-    isLeaf: false,
-  },
-  {
-    value: 2,
-    label: '软件',
-    isLeaf: false,
-  },
-];
+const RadioGroup = Radio.Group;
 
 export interface UpdateFormState {
-  formVals: Partial<TableListItem>;
+  formVals: FormValueType;
   currentStep: number;
 }
 
@@ -39,10 +34,23 @@ const formLayout = {
 };
 
 const UpdateForm: React.FC<UpdateFormProps> = (props) => {
-  const [formVals, setFormVals] = useState<Partial<TableListItem>>({
+  const [formVals, setFormVals] = useState<FormValueType>({
     id: props.values.id,
     title: props.values.title,
+    sort: props.values.sort,
+    image: props.values.image,
+    slide: props.values.slide,
+    group: props.values.group,
+    category: props.values.category,
+    version: props.values.version,
+    language: props.values.language,
+    size: props.values.size,
+    intro: props.values.intro,
+    content: props.values.content,
+    url: props.values.url,
   });
+
+  const [currentStep, setCurrentStep] = useState<number>(0);
 
   const [form] = Form.useForm();
 
@@ -51,42 +59,136 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
     onCancel: handleUpdateModalVisible,
     updateModalVisible,
     values,
+    category,
   } = props;
 
-  const handle = async () => {
+  const forward = () => setCurrentStep(currentStep + 1);
+
+  const backward = () => setCurrentStep(currentStep - 1);
+
+  const handleNext = async () => {
     const fieldsValue = await form.validateFields();
 
     setFormVals({ ...formVals, ...fieldsValue });
-    handleUpdate({ ...formVals, ...fieldsValue });
+
+    if (currentStep < 2) {
+      forward();
+    } else {
+      handleUpdate({ ...formVals, ...fieldsValue });
+    }
   };
 
   const renderContent = () => {
+    if (currentStep === 1) {
+      return (
+        <>
+          <FormItem name="target" label="监控对象">
+            <Select style={{ width: '100%' }}>
+              <Option value="0">表一</Option>
+              <Option value="1">表二</Option>
+            </Select>
+          </FormItem>
+          <FormItem name="template" label="规则模板">
+            <Select style={{ width: '100%' }}>
+              <Option value="0">规则模板一</Option>
+              <Option value="1">规则模板二</Option>
+            </Select>
+          </FormItem>
+          <FormItem name="type" label="规则类型">
+            <RadioGroup>
+              <Radio value="0">强</Radio>
+              <Radio value="1">弱</Radio>
+            </RadioGroup>
+          </FormItem>
+        </>
+      );
+    }
+    if (currentStep === 2) {
+      return (
+        <>
+          <FormItem
+            name="time"
+            label="开始时间"
+            rules={[{ required: true, message: '请选择开始时间！' }]}
+          >
+            <DatePicker
+              style={{ width: '100%' }}
+              showTime
+              format="YYYY-MM-DD HH:mm:ss"
+              placeholder="选择开始时间"
+            />
+          </FormItem>
+          <FormItem name="frequency" label="调度周期">
+            <Select style={{ width: '100%' }}>
+              <Option value="month">月</Option>
+              <Option value="week">周</Option>
+            </Select>
+          </FormItem>
+        </>
+      );
+    }
+    // console.log(category, [formVals.group, formVals.category]);
     return (
       <>
         <FormItem
           name="title"
           label="名称"
-          rules={[{ required: true, message: '请输入规则名称！' }]}
+          rules={[
+            {
+              required: true,
+              message: '名称为必填项',
+            },
+          ]}
         >
           <Input placeholder="请输入" />
         </FormItem>
         <FormItem
-          name="intro"
-          label="简介"
-          rules={[{ required: true, message: '请输入至少五个字符的规则描述！', min: 5 }]}
+          name="category"
+          label="分类"
+          rules={[
+            {
+              required: true,
+              message: '归属类别为必选项',
+            },
+          ]}
         >
-          <TextArea rows={4} placeholder="请输入至少五个字符" />
+          <Cascader options={category} placeholder="请选择分类" />
         </FormItem>
-        <LazyOptions name="category" label="分类" placeholder="请选择分类" options={category} />
       </>
     );
   };
 
   const renderFooter = () => {
+    if (currentStep === 1) {
+      return (
+        <>
+          <Button style={{ float: 'left' }} onClick={backward}>
+            上一步
+          </Button>
+          <Button onClick={() => handleUpdateModalVisible(false, values)}>取消</Button>
+          <Button type="primary" onClick={() => handleNext()}>
+            下一步
+          </Button>
+        </>
+      );
+    }
+    if (currentStep === 2) {
+      return (
+        <>
+          <Button style={{ float: 'left' }} onClick={backward}>
+            上一步
+          </Button>
+          <Button onClick={() => handleUpdateModalVisible(false, values)}>取消</Button>
+          <Button type="primary" onClick={() => handleNext()}>
+            完成
+          </Button>
+        </>
+      );
+    }
     return (
       <>
         <Button onClick={() => handleUpdateModalVisible(false, values)}>取消</Button>
-        <Button type="primary" onClick={() => handle()}>
+        <Button type="primary" onClick={() => handleNext()}>
           下一步
         </Button>
       </>
@@ -98,29 +200,30 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
       width={640}
       bodyStyle={{ padding: '32px 40px 48px' }}
       destroyOnClose
-      title="规则配置"
+      title="编辑App"
       visible={updateModalVisible}
       footer={renderFooter()}
       onCancel={() => handleUpdateModalVisible()}
     >
+      <Steps style={{ marginBottom: 28 }} size="small" current={currentStep}>
+        <Step title="基本信息" />
+        <Step title="图片上传" />
+        <Step title="详情编辑" />
+      </Steps>
       <Form
         {...formLayout}
         form={form}
         initialValues={{
-          id: formVals.id,
-          // group: formVals.group,
-          sort: formVals.sort,
           title: formVals.title,
+          sort: formVals.sort,
           image: formVals.image,
-          category: formVals.category,
+          slide: formVals.slide,
+          category: [formVals.group, formVals.category],
           version: formVals.version,
           language: formVals.language,
           size: formVals.size,
           intro: formVals.intro,
           content: formVals.content,
-          hot: formVals.hot,
-          top: formVals.top,
-          // slide: formVals.slide,
           url: formVals.url,
         }}
       >
