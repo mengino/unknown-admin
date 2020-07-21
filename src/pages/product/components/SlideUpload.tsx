@@ -2,7 +2,9 @@ import React from 'react';
 import { Upload, Modal, Form } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
-function getBase64(file: File | Blob) {
+import { UploadFile } from 'antd/lib/upload/interface';
+
+function getBase64(file: File | Blob): Promise<string | ArrayBuffer | null> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -11,7 +13,7 @@ function getBase64(file: File | Blob) {
   });
 }
 
-export default class PicturesWall extends React.Component<{ name: string }> {
+export default class PicturesWall extends React.Component<{ name: string; num: number }> {
   state = {
     previewVisible: false,
     previewImage: '',
@@ -21,31 +23,43 @@ export default class PicturesWall extends React.Component<{ name: string }> {
 
   handleCancel = () => this.setState({ previewVisible: false });
 
-  handlePreview = async (file) => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj);
-    }
+  handlePreview = async (file: UploadFile) => {
+    const preview: string | undefined =
+      !file.url && !file.preview
+        ? ((await getBase64(file.originFileObj as File | Blob)) as string | undefined)
+        : file.preview;
 
     this.setState({
-      previewImage: file.url || file.preview,
+      previewImage: file.url || preview,
       previewVisible: true,
-      previewTitle: file.name || file.url.substring(file.url.lastIndexOf('/') + 1),
+      previewTitle: file.name || file.url?.substring(file.url.lastIndexOf('/') + 1),
     });
   };
 
-  handleChange = ({ fileList }) => this.setState({ fileList });
+  handleChange = ({ fileList }: { fileList: UploadFile[] }) => this.setState({ fileList });
 
   render() {
     const { previewVisible, previewImage, fileList, previewTitle } = this.state;
     const uploadButton = (
       <div>
         <PlusOutlined />
-        <div className="ant-upload-text">Upload</div>
+        <div className="ant-upload-text">上传</div>
       </div>
     );
     return (
       <div className="clearfix">
-        <Form.Item name={this.props.name}>
+        <Form.Item
+          noStyle
+          name={this.props.name}
+          getValueFromEvent={(e) => {
+            if (!e || !e.fileList) {
+              return e;
+            }
+
+            return e.fileList;
+          }}
+          initialValue={this.state.fileList}
+        >
           <Upload
             action="/api/upload"
             listType="picture-card"
@@ -53,7 +67,7 @@ export default class PicturesWall extends React.Component<{ name: string }> {
             onPreview={this.handlePreview}
             onChange={this.handleChange}
           >
-            {fileList.length >= 8 ? null : uploadButton}
+            {fileList.length >= this.props.num ? null : uploadButton}
           </Upload>
         </Form.Item>
         <Modal

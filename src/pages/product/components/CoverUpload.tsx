@@ -2,6 +2,7 @@ import React from 'react';
 import { Upload, message, Form } from 'antd';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload';
+import { UploadFile } from 'antd/lib/upload/interface';
 
 function getBase64(img: File | Blob, callback: (imageUrl: string | ArrayBuffer | null) => void) {
   const reader = new FileReader();
@@ -28,7 +29,7 @@ export default class CoverImage extends React.Component<{ name: string }> {
     fileList: [],
   };
 
-  handleChange = (info: UploadChangeParam) => {
+  handleChange = (info: UploadChangeParam<UploadFile>) => {
     if (info.file.status === 'uploading') {
       this.setState({ loading: true });
       return;
@@ -40,7 +41,6 @@ export default class CoverImage extends React.Component<{ name: string }> {
           imageUrl,
           loading: false,
         });
-        console.log(this.state.fileList);
       });
     }
   };
@@ -59,13 +59,13 @@ export default class CoverImage extends React.Component<{ name: string }> {
         name={this.props.name}
         valuePropName="fileList"
         getValueFromEvent={(e) => {
-          console.log(e);
           if (!e || !e.fileList) {
             return e;
           }
 
           const { fileList } = e;
-          return fileList;
+
+          return [fileList.pop()];
         }}
         initialValue={this.state.fileList}
       >

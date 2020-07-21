@@ -23,12 +23,12 @@ const { Option } = Select;
  * @param fields
  */
 const handleAdd = async (fields: TableListItem) => {
-  console.log(fields);
   const hide = message.loading('正在添加');
   try {
     const [group, category] = fields.category || [];
+    const [imageFile] = fields.image;
 
-    const image: string = fields.image[0].response?.data.file_name as string;
+    const image: string = imageFile.response?.data.file_name as string;
     const slide: Array<string> = [];
     fields.slide.map(
       (value) => value.response !== undefined && slide.push(value.response.data.file_name),
@@ -47,7 +47,6 @@ const handleAdd = async (fields: TableListItem) => {
     message.success('添加成功');
     return true;
   } catch (error) {
-    console.log(error);
     hide();
     message.error('添加失败请重试！');
     return false;
@@ -185,6 +184,15 @@ const TableList: React.FC<{}> = () => {
     {
       title: '分类',
       dataIndex: 'category_id',
+      hideInTable: true,
+      hideInForm: true,
+      renderFormItem: () => <Cascader options={category} placeholder="请选择分类" />,
+    },
+    {
+      title: '分类',
+      dataIndex: 'category',
+      hideInSearch: true,
+      hideInTable: true,
       rules: [
         {
           required: true,
@@ -220,9 +228,6 @@ const TableList: React.FC<{}> = () => {
       valueType: 'digit',
       hideInSearch: true,
       hideInTable: true,
-      formItemProps: {
-        value: 0,
-      },
       rules: [
         {
           message: '请输入大于0的整数',
@@ -230,7 +235,6 @@ const TableList: React.FC<{}> = () => {
           min: 0,
         },
       ],
-      getValueFromEvent: (value) => (value < 0 || value === '-' ? undefined : parseInt(value, 10)),
     },
     {
       title: '版本号',
@@ -283,7 +287,7 @@ const TableList: React.FC<{}> = () => {
       valueType: 'avatar',
       hideInSearch: true,
       hideInTable: true,
-      renderFormItem: (item) => <PicturesWall name={item.dataIndex as string} />,
+      renderFormItem: (item) => <PicturesWall name={item.dataIndex as string} num={9} />,
     },
     {
       title: '修改时间',

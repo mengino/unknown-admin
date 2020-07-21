@@ -9,7 +9,6 @@ export async function queryRule(params: Query<TableListFilter>) {
 }
 
 export async function addRule(params: TableListCreate) {
-  console.log(params)
   return request('/api/product', {
     method: 'POST',
     data: {
