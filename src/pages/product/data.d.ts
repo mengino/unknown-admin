@@ -1,6 +1,23 @@
 // import { Query } from '@/services/base';
 import { UploadFile } from 'antd/lib/upload/interface';
 
+
+interface groupCategory {
+  group: number;
+  category_id: number;
+}
+
+export interface ProductSearch {
+  title?: string;
+  category?: number[];
+}
+
+export interface ProductQuery {
+  title?: string;
+  category?: groupCategory;
+}
+
+
 export interface TableListParams {
   title?: string;
   category?: Array<number>;
@@ -40,7 +57,7 @@ export interface TableListItem {
   image: UploadFile<{ data: { file_name: string; url: string }; code: number; message: string }>[];
   slide: UploadFile<{ data: { file_name: string; url: string }; code: number; message: string }>[];
   group: 1 | 2;
-  category: Array<number>;
+  category_id: number;
   version: string;
   language: number;
   size: string;

@@ -3,17 +3,9 @@ import { Form, Button, DatePicker, Input, Modal, Radio, Select, Steps, Cascader 
 import { CascaderOptionType } from 'antd/lib/cascader';
 import { TableListItem } from '../data.d';
 
-export interface FormValueType extends Partial<TableListItem> {
-  target?: string;
-  template?: string;
-  type?: string;
-  time?: string;
-  frequency?: string;
-}
-
 export interface UpdateFormProps {
-  onCancel: (flag?: boolean, formVals?: FormValueType) => void;
-  onSubmit: (values: FormValueType) => void;
+  onCancel: (flag?: boolean, formVals?: Partial<TableListItem>) => void;
+  onSubmit: (values: Partial<TableListItem>) => void;
   updateModalVisible: boolean;
   values: Partial<TableListItem>;
   category: CascaderOptionType[];
@@ -24,7 +16,7 @@ const { Option } = Select;
 const RadioGroup = Radio.Group;
 
 export interface UpdateFormState {
-  formVals: FormValueType;
+  formVals: Partial<TableListItem>;
   currentStep: number;
 }
 
@@ -34,14 +26,14 @@ const formLayout = {
 };
 
 const UpdateForm: React.FC<UpdateFormProps> = (props) => {
-  const [formVals, setFormVals] = useState<FormValueType>({
+  const [formVals, setFormVals] = useState<Partial<TableListItem>>({
     id: props.values.id,
     title: props.values.title,
     sort: props.values.sort,
     image: props.values.image,
     slide: props.values.slide,
     group: props.values.group,
-    category: props.values.category,
+    category_id: props.values.category_id,
     version: props.values.version,
     language: props.values.language,
     size: props.values.size,
@@ -127,7 +119,6 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
         </>
       );
     }
-    // console.log(category, [formVals.group, formVals.category]);
     return (
       <>
         <FormItem
@@ -218,7 +209,7 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
           sort: formVals.sort,
           image: formVals.image,
           slide: formVals.slide,
-          category: [formVals.group, formVals.category],
+          category: [formVals.group, formVals.category_id],
           version: formVals.version,
           language: formVals.language,
           size: formVals.size,

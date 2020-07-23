@@ -25,7 +25,7 @@ const { Option } = Select;
 const handleAdd = async (fields: TableListItem) => {
   const hide = message.loading('正在添加');
   try {
-    const [group, category] = fields.category || [];
+    const [group, category] = fields.category_id || [];
     const [imageFile] = fields.image;
 
     const image: string = imageFile.response?.data.file_name as string;
