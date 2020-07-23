@@ -1,14 +1,14 @@
 import request from '@/utils/request';
 import { Query } from '@/services/base';
-import { TableListFilter, TableListItem, TableListCreate } from './data';
+import { ProductQuery, ProductCreate, ProductItem } from './data';
 
-export async function queryRule(params: Query<TableListFilter>) {
+export async function queryRule(params: ProductQuery & Query) {
   return request('/api/product', {
     params,
   });
 }
 
-export async function addRule(params: TableListCreate) {
+export async function addRule(params: Partial<ProductCreate>) {
   return request('/api/product', {
     method: 'POST',
     data: {
@@ -17,7 +17,7 @@ export async function addRule(params: TableListCreate) {
   });
 }
 
-export async function updateRule(params: Partial<TableListItem>) {
+export async function updateRule(params: Partial<ProductItem>) {
   return request(`/api/product/${params.id}`, {
     method: 'PUT',
     data: {

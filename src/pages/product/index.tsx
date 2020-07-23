@@ -13,7 +13,7 @@ import UpdateForm from './components/UpdateForm';
 import CoverImage from './components/CoverUpload';
 import PicturesWall from './components/SlideUpload';
 
-import { TableListItem, TableListParams } from './data';
+import { ProductSearch, ProductAdd, ProductItem } from './data';
 import { queryRule, updateRule, addRule, removeRule } from './service';
 
 const { Option } = Select;
@@ -22,27 +22,33 @@ const { Option } = Select;
  * 添加节点
  * @param fields
  */
-const handleAdd = async (fields: TableListItem) => {
+const handleAdd = async (fields: ProductAdd) => {
   const hide = message.loading('正在添加');
   try {
-    const [group, category] = fields.category_id || [];
+    const [group, categoryID] = fields.category || [];
     const [imageFile] = fields.image;
 
     const image: string = imageFile.response?.data.file_name as string;
-    const slide: Array<string> = [];
+    const slide: string[] = [];
     fields.slide.map(
       (value) => value.response !== undefined && slide.push(value.response.data.file_name),
     );
 
     await addRule({
-      ...fields,
+      title: fields.title,
       image,
       slide,
       group,
-      category,
+      category_id: categoryID,
+      sort: fields.sort,
+      size: fields.size,
+      intro: fields.intro,
+      content: fields.content,
+      url: fields.url,
+      version: fields.version,
+      language: fields.language,
     });
 
-    // await addRule({ ...fields });
     hide();
     message.success('添加成功');
     return true;
@@ -57,7 +63,7 @@ const handleAdd = async (fields: TableListItem) => {
  * 更新节点
  * @param fields
  */
-const handleUpdate = async (fields: Partial<TableListItem>) => {
+const handleUpdate = async (fields: Partial<ProductItem>) => {
   const hide = message.loading('正在配置');
   try {
     await updateRule({
@@ -65,7 +71,7 @@ const handleUpdate = async (fields: Partial<TableListItem>) => {
       sort: fields.sort,
       title: fields.title,
       image: fields.image,
-      category: fields.category,
+      category_id: fields.category_id,
       version: fields.version,
       language: fields.language,
       size: fields.size,
@@ -90,7 +96,7 @@ const handleUpdate = async (fields: Partial<TableListItem>) => {
  *  删除节点
  * @param selectedRows
  */
-const handleRemove = async (selectedRows: TableListItem[]) => {
+const handleRemove = async (selectedRows: ProductItem[]) => {
   const hide = message.loading('正在删除');
   if (!selectedRows) return true;
   try {
@@ -107,7 +113,7 @@ const handleRemove = async (selectedRows: TableListItem[]) => {
   }
 };
 
-const TableList: React.FC<{}> = () => {
+const ProductList: React.FC<{}> = () => {
   const [category, setCategory] = useState<CascaderOptionType[]>([
     {
       value: 1,
@@ -169,8 +175,8 @@ const TableList: React.FC<{}> = () => {
   const [updateModalVisible, handleUpdateModalVisible] = useState<boolean>(false);
   const [stepFormValues, setStepFormValues] = useState({});
   const actionRef = useRef<ActionType>();
-  const [selectedRowsState, setSelectedRows] = useState<TableListItem[]>([]);
-  const columns: ProColumns<TableListItem>[] = [
+  const [selectedRowsState, setSelectedRows] = useState<ProductItem[]>([]);
+  const columns: ProColumns<ProductItem>[] = [
     {
       title: '名称',
       dataIndex: 'title',
@@ -182,8 +188,21 @@ const TableList: React.FC<{}> = () => {
       ],
     },
     {
+      title: '封面图',
+      dataIndex: 'image',
+      valueType: 'avatar',
+      hideInSearch: true,
+      rules: [
+        {
+          required: true,
+          message: '请上传封面图',
+        },
+      ],
+      renderFormItem: (item) => <CoverImage name={item.dataIndex as string} />,
+    },
+    {
       title: '分类',
-      dataIndex: 'category_id',
+      dataIndex: 'category',
       hideInTable: true,
       hideInForm: true,
       renderFormItem: () => <Cascader options={category} placeholder="请选择分类" />,
@@ -202,17 +221,29 @@ const TableList: React.FC<{}> = () => {
       renderFormItem: () => <Cascader options={category} placeholder="请选择分类" />,
     },
     {
-      title: '封面图',
-      dataIndex: 'image',
-      valueType: 'avatar',
+      title: '分类',
+      dataIndex: 'category',
+      valueType: 'text',
+      hideInForm: true,
       hideInSearch: true,
-      rules: [
-        {
-          required: true,
-          message: '请上传封面图',
-        },
-      ],
-      renderFormItem: (item) => <CoverImage name={item.dataIndex as string} />,
+      renderText: (_, record) => {
+        for (let i = 0; i < category.length; i += 1) {
+          const { value, label, children } = category[i];
+          if (value === record.group && children !== undefined) {
+            for (let j = 0; j < children.length; j += 1) {
+              if (children[j].value === record.category_id) {
+                return (
+                  <>
+                    {label} / {children[j].label}
+                  </>
+                );
+              }
+            }
+          }
+        }
+
+        return '';
+      },
     },
     {
       title: '排序权重',
@@ -240,11 +271,13 @@ const TableList: React.FC<{}> = () => {
       title: '版本号',
       dataIndex: 'version',
       hideInSearch: true,
+      hideInTable: true,
     },
     {
       title: '语言',
       dataIndex: 'language',
       hideInSearch: true,
+      hideInTable: true,
       renderFormItem: () => (
         <Select style={{ width: '100%' }} placeholder="请选择语言">
           {language.map((element) => {
@@ -261,11 +294,13 @@ const TableList: React.FC<{}> = () => {
       title: '大小',
       dataIndex: 'size',
       hideInSearch: true,
+      hideInTable: true,
     },
     {
       title: '下载地址',
       dataIndex: 'url',
       hideInSearch: true,
+      hideInTable: true,
     },
     {
       title: '简介',
@@ -340,7 +375,7 @@ const TableList: React.FC<{}> = () => {
 
   return (
     <PageContainer>
-      <ProTable<TableListItem, TableListParams>
+      <ProTable<ProductItem, ProductSearch>
         headerTitle="App列表"
         actionRef={actionRef}
         rowKey="id"
@@ -354,17 +389,14 @@ const TableList: React.FC<{}> = () => {
           const [group, categoryID] = params.category || [];
 
           return queryRule({
+            title: params.title,
+            group,
+            category_id: categoryID,
             pageSize: params.pageSize,
             currentPage: params.current,
-            filter: {
-              title: params.title,
-              group,
-              category: categoryID,
-              ...filter,
-            },
+            filter,
             sorter,
           });
-          // return queryRule({ ...data, sorter, filter })
         }}
         columns={columns}
         rowSelection={{
@@ -392,7 +424,7 @@ const TableList: React.FC<{}> = () => {
         </FooterToolbar>
       )}
       <CreateForm onCancel={() => handleModalVisible(false)} modalVisible={createModalVisible}>
-        <ProTable<TableListItem, TableListItem>
+        <ProTable<ProductItem, ProductAdd>
           onSubmit={async (value) => {
             const success = await handleAdd(value);
             if (success) {
@@ -416,7 +448,7 @@ const TableList: React.FC<{}> = () => {
               handleUpdateModalVisible(false);
               setStepFormValues({});
               if (actionRef.current) {
-                actionRef.current.reload();
+                actionRef.current.reloadAndRest();
               }
             }
           }}
@@ -433,4 +465,4 @@ const TableList: React.FC<{}> = () => {
   );
 };
 
-export default TableList;
+export default ProductList;

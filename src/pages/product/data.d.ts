@@ -1,12 +1,6 @@
 // import { Query } from '@/services/base';
 import { UploadFile } from 'antd/lib/upload/interface';
 
-
-interface groupCategory {
-  group: number;
-  category_id: number;
-}
-
 export interface ProductSearch {
   title?: string;
   category?: number[];
@@ -14,22 +8,30 @@ export interface ProductSearch {
 
 export interface ProductQuery {
   title?: string;
-  category?: groupCategory;
+  group: number;
+  category_id: number;
 }
 
+export interface ProductAdd {
+  title: string;
+  sort: number;
+  size: string;
+  intro: string;
+  content: string;
+  url: string;
+  version: string;
+  language: number;
 
-export interface TableListParams {
-  title?: string;
-  category?: Array<number>;
+  image: UploadFile<{ data: { file_name: string; url: string }; code: number; message: string }>[];
+  slide: UploadFile<{ data: { file_name: string; url: string }; code: number; message: string }>[];
+  category: number[];
+
+  status: boolean;
+  hot: number;
+  top: boolean;
 }
 
-export interface TableListFilter {
-  title?: string;
-  group?: number;
-  category?: number;
-}
-
-export interface TableListCreate {
+export interface ProductCreate {
   title: string;
   sort: number;
   size: string;
@@ -40,23 +42,23 @@ export interface TableListCreate {
   language: number;
 
   image: string;
-  slide: Array<string>;
+  slide: string[];
   group: number;
-  category: number;
+  category_id: number;
 
   status: boolean;
   hot: number;
   top: boolean;
 }
 
-export interface TableListItem {
+export interface ProductItem {
   id: number;
   status: boolean;
   sort: number;
   title: string;
-  image: UploadFile<{ data: { file_name: string; url: string }; code: number; message: string }>[];
-  slide: UploadFile<{ data: { file_name: string; url: string }; code: number; message: string }>[];
-  group: 1 | 2;
+  image: string;
+  slide: string[];
+  group: number;
   category_id: number;
   version: string;
   language: number;
@@ -70,13 +72,13 @@ export interface TableListItem {
   createdAt: Date;
 }
 
-export interface TableListPagination {
+export interface ProductPagination {
   total: number;
   pageSize: number;
   current: number;
 }
 
-export interface TableListData {
-  list: TableListItem[];
-  pagination: Partial<TableListPagination>;
+export interface ProductData {
+  list: ProductItem[];
+  pagination: Partial<ProductPagination>;
 }

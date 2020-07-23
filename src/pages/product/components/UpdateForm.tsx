@@ -1,22 +1,25 @@
 import React, { useState } from 'react';
-import { Form, Button, DatePicker, Input, Modal, Radio, Select, Steps, Cascader } from 'antd';
+import { Form, Button, Input, Modal, Select, Steps, Cascader, InputNumber } from 'antd';
 import { CascaderOptionType } from 'antd/lib/cascader';
-import { TableListItem } from '../data.d';
+
+import CoverImage from './CoverUpload';
+import PicturesWall from './SlideUpload';
+
+import { ProductItem } from '../data.d';
 
 export interface UpdateFormProps {
-  onCancel: (flag?: boolean, formVals?: Partial<TableListItem>) => void;
-  onSubmit: (values: Partial<TableListItem>) => void;
+  onCancel: (flag?: boolean, formVals?: Partial<ProductItem>) => void;
+  onSubmit: (values: Partial<ProductItem>) => void;
   updateModalVisible: boolean;
-  values: Partial<TableListItem>;
+  values: Partial<ProductItem>;
   category: CascaderOptionType[];
 }
 const FormItem = Form.Item;
 const { Step } = Steps;
 const { Option } = Select;
-const RadioGroup = Radio.Group;
 
 export interface UpdateFormState {
-  formVals: Partial<TableListItem>;
+  formVals: Partial<ProductItem>;
   currentStep: number;
 }
 
@@ -26,7 +29,34 @@ const formLayout = {
 };
 
 const UpdateForm: React.FC<UpdateFormProps> = (props) => {
-  const [formVals, setFormVals] = useState<Partial<TableListItem>>({
+  const [language] = useState([
+    {
+      value: 1,
+      label: '简体中文',
+    },
+    {
+      value: 2,
+      label: '繁体中文',
+    },
+    {
+      value: 3,
+      label: '英文',
+    },
+    {
+      value: 4,
+      label: '日文',
+    },
+    {
+      value: 5,
+      label: '韩文',
+    },
+    {
+      value: 6,
+      label: '俄语',
+    },
+  ]);
+
+  const [formVals, setFormVals] = useState<Partial<ProductItem>>({
     id: props.values.id,
     title: props.values.title,
     sort: props.values.sort,
@@ -74,23 +104,21 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
     if (currentStep === 1) {
       return (
         <>
-          <FormItem name="target" label="监控对象">
-            <Select style={{ width: '100%' }}>
-              <Option value="0">表一</Option>
-              <Option value="1">表二</Option>
-            </Select>
+          <FormItem
+            name="image"
+            label="封面图"
+            rules={[
+              {
+                required: true,
+                message: '请上传封面图',
+              },
+            ]}
+            valuePropName="fileList"
+          >
+            <CoverImage name="image" />
           </FormItem>
-          <FormItem name="template" label="规则模板">
-            <Select style={{ width: '100%' }}>
-              <Option value="0">规则模板一</Option>
-              <Option value="1">规则模板二</Option>
-            </Select>
-          </FormItem>
-          <FormItem name="type" label="规则类型">
-            <RadioGroup>
-              <Radio value="0">强</Radio>
-              <Radio value="1">弱</Radio>
-            </RadioGroup>
+          <FormItem name="slide" label="截图">
+            <PicturesWall name="slide" num={9} />
           </FormItem>
         </>
       );
@@ -98,23 +126,11 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
     if (currentStep === 2) {
       return (
         <>
-          <FormItem
-            name="time"
-            label="开始时间"
-            rules={[{ required: true, message: '请选择开始时间！' }]}
-          >
-            <DatePicker
-              style={{ width: '100%' }}
-              showTime
-              format="YYYY-MM-DD HH:mm:ss"
-              placeholder="选择开始时间"
-            />
+          <FormItem name="intro" label="简介">
+            <Input.TextArea style={{ width: '100%' }} />
           </FormItem>
-          <FormItem name="frequency" label="调度周期">
-            <Select style={{ width: '100%' }}>
-              <Option value="month">月</Option>
-              <Option value="week">周</Option>
-            </Select>
+          <FormItem name="content" label="详情">
+            <Input.TextArea style={{ width: '100%' }} />
           </FormItem>
         </>
       );
@@ -144,6 +160,39 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
           ]}
         >
           <Cascader options={category} placeholder="请选择分类" />
+        </FormItem>
+        <FormItem
+          name="sort"
+          label="排序权重"
+          rules={[
+            {
+              message: '请输入大于0的整数',
+              pattern: /^[+]{0,1}\d+/,
+              min: 0,
+            },
+          ]}
+        >
+          <InputNumber style={{ width: '100%' }} />
+        </FormItem>
+        <FormItem name="version" label="版本号">
+          <Input style={{ width: '100%' }} />
+        </FormItem>
+        <FormItem name="language" label="语言">
+          <Select style={{ width: '100%' }} placeholder="请选择语言">
+            {language.map((element) => {
+              return (
+                <Option key={element.value} value={element.value}>
+                  {element.label}
+                </Option>
+              );
+            })}
+          </Select>
+        </FormItem>
+        <FormItem name="size" label="大小">
+          <Input style={{ width: '100%' }} />
+        </FormItem>
+        <FormItem name="url" label="下载地址">
+          <Input style={{ width: '100%' }} />
         </FormItem>
       </>
     );

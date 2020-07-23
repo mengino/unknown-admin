@@ -67,7 +67,7 @@ export default class CoverImage extends React.Component<{ name: string }> {
 
           return [fileList.pop()];
         }}
-        initialValue={this.state.fileList}
+        // initialValue={this.state.fileList}
       >
         <Upload
           listType="picture-card"
@@ -82,8 +82,8 @@ export default class CoverImage extends React.Component<{ name: string }> {
           {imageUrl ? (
             <img alt="封面图预览" src={imageUrl} style={{ width: '100%' }} />
           ) : (
-              uploadButton
-            )}
+            uploadButton
+          )}
         </Upload>
       </Form.Item>
     );

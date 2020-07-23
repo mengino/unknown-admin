@@ -58,7 +58,7 @@ export default class PicturesWall extends React.Component<{ name: string; num: n
 
             return e.fileList;
           }}
-          initialValue={this.state.fileList}
+          // initialValue={this.state.fileList}
         >
           <Upload
             action="/api/upload"
