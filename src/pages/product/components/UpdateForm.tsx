@@ -5,11 +5,11 @@ import { CascaderOptionType } from 'antd/lib/cascader';
 import CoverImage from './CoverUpload';
 import PicturesWall from './SlideUpload';
 
-import { ProductItem } from '../data.d';
+import { ProductEdit, ProductItem } from '../data.d';
 
 export interface UpdateFormProps {
   onCancel: (flag?: boolean, formVals?: Partial<ProductItem>) => void;
-  onSubmit: (values: Partial<ProductItem>) => void;
+  onSubmit: (values: Partial<ProductEdit>) => void;
   updateModalVisible: boolean;
   values: Partial<ProductItem>;
   category: CascaderOptionType[];
@@ -17,11 +17,6 @@ export interface UpdateFormProps {
 const FormItem = Form.Item;
 const { Step } = Steps;
 const { Option } = Select;
-
-export interface UpdateFormState {
-  formVals: Partial<ProductItem>;
-  currentStep: number;
-}
 
 const formLayout = {
   labelCol: { span: 7 },
@@ -56,14 +51,13 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
     },
   ]);
 
-  const [formVals, setFormVals] = useState<Partial<ProductItem>>({
+  const [formVals, setFormVals] = useState<Partial<ProductEdit>>({
     id: props.values.id,
     title: props.values.title,
     sort: props.values.sort,
-    image: props.values.image,
-    slide: props.values.slide,
-    group: props.values.group,
-    category_id: props.values.category_id,
+    // image: props.values.image,
+    // slide: props.values.slide,
+    category: [props.values.group as number, props.values.category_id as number],
     version: props.values.version,
     language: props.values.language,
     size: props.values.size,
@@ -96,7 +90,21 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
     if (currentStep < 2) {
       forward();
     } else {
-      handleUpdate({ ...formVals, ...fieldsValue });
+      // handleUpdate({ ...formVals, ...fieldsValue });
+      handleUpdate({
+        id: formVals.id,
+        title: formVals.title,
+        image: formVals.image,
+        slide: formVals.slide,
+        category: formVals.category,
+        sort: formVals.sort,
+        size: formVals.size,
+        intro: formVals.intro,
+        content: formVals.content,
+        url: formVals.url,
+        version: formVals.version,
+        language: formVals.language,
+      });
     }
   };
 
@@ -113,7 +121,6 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
                 message: '请上传封面图',
               },
             ]}
-            valuePropName="fileList"
           >
             <CoverImage name="image" />
           </FormItem>
@@ -258,7 +265,7 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
           sort: formVals.sort,
           image: formVals.image,
           slide: formVals.slide,
-          category: [formVals.group, formVals.category_id],
+          category: formVals.category,
           version: formVals.version,
           language: formVals.language,
           size: formVals.size,

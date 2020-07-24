@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
 import { CascaderOptionType } from 'antd/lib/cascader';
+import { UploadFile } from 'antd/lib/upload/interface';
 
 import { queryRule as categoryQuery } from '@/pages/category/service';
 import { TableListItem as categoryTableListItem } from '@/pages/category/data';
@@ -13,7 +14,7 @@ import UpdateForm from './components/UpdateForm';
 import CoverImage from './components/CoverUpload';
 import PicturesWall from './components/SlideUpload';
 
-import { ProductSearch, ProductAdd, ProductItem } from './data';
+import { ProductSearch, ProductAdd, ProductEdit, ProductItem } from './data';
 import { queryRule, updateRule, addRule, removeRule } from './service';
 
 const { Option } = Select;
@@ -63,22 +64,35 @@ const handleAdd = async (fields: ProductAdd) => {
  * 更新节点
  * @param fields
  */
-const handleUpdate = async (fields: Partial<ProductItem>) => {
+const handleUpdate = async (fields: Partial<ProductEdit>) => {
   const hide = message.loading('正在配置');
   try {
+    const [group, categoryID] = fields.category || [];
+    const [imageFile] = fields.image as UploadFile<{
+      data: { file_name: string; url: string };
+      code: number;
+      message: string;
+    }>[];
+
+    const image: string = imageFile.response?.data.file_name as string;
+    const slide: string[] = [];
+    fields.slide?.map(
+      (value) => value.response !== undefined && slide.push(value.response.data.file_name),
+    );
+
     await updateRule({
       id: fields.id,
+      image,
+      slide,
+      group,
+      category_id: categoryID,
       sort: fields.sort,
       title: fields.title,
-      image: fields.image,
-      category_id: fields.category_id,
       version: fields.version,
       language: fields.language,
       size: fields.size,
       intro: fields.intro,
       content: fields.content,
-      hot: fields.hot,
-      top: fields.top,
       url: fields.url,
     });
     hide();

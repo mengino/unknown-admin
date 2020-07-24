@@ -51,6 +51,47 @@ export interface ProductCreate {
   top: boolean;
 }
 
+export interface ProductEdit {
+  id: number;
+  title: string;
+  sort: number;
+  size: string;
+  intro: string;
+  content: string;
+  url: string;
+  version: string;
+  language: number;
+
+  image: UploadFile<{ data: { file_name: string; url: string }; code: number; message: string }>[];
+  slide: UploadFile<{ data: { file_name: string; url: string }; code: number; message: string }>[];
+  category: number[];
+
+  status: boolean;
+  hot: number;
+  top: boolean;
+}
+
+export interface ProductUpdate {
+  id: number;
+  title: string;
+  sort: number;
+  size: string;
+  intro: string;
+  content: string;
+  url: string;
+  version: string;
+  language: number;
+
+  image: string;
+  slide: string[];
+  group: number;
+  category_id: number;
+
+  status: boolean;
+  hot: number;
+  top: boolean;
+}
+
 export interface ProductItem {
   id: number;
   status: boolean;

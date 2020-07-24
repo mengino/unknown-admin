@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import { Query } from '@/services/base';
-import { ProductQuery, ProductCreate, ProductItem } from './data';
+import { ProductQuery, ProductCreate, ProductUpdate } from './data';
 
 export async function queryRule(params: ProductQuery & Query) {
   return request('/api/product', {
@@ -17,7 +17,7 @@ export async function addRule(params: Partial<ProductCreate>) {
   });
 }
 
-export async function updateRule(params: Partial<ProductItem>) {
+export async function updateRule(params: Partial<ProductUpdate>) {
   return request(`/api/product/${params.id}`, {
     method: 'PUT',
     data: {
