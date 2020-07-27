@@ -1,26 +1,27 @@
 import request from '@/utils/request';
-import { TableListQuery, TableListItem } from './data';
+import { Query } from '@/services/base';
+import { CategorySearch, CategoryCreate, CategoryUpdate } from './data';
 
-export async function queryRule(params?: TableListQuery): Promise<{ code: number, data: TableListItem[], message: string }> {
+export async function queryRule(params?: CategorySearch & Query) {
   return request('/api/category', {
-    params
+    params,
   });
 }
 
-export async function addRule(params: TableListItem) {
+export async function addRule(params: Partial<CategoryCreate>) {
   return request('/api/category', {
     method: 'POST',
     data: {
-      ...params
+      ...params,
     },
   });
 }
 
-export async function updateRule(params: Partial<TableListItem>) {
+export async function updateRule(params: Partial<CategoryUpdate>) {
   return request(`/api/category/${params.id}`, {
     method: 'PUT',
     data: {
-      ...params
+      ...params,
     },
   });
 }
@@ -29,7 +30,7 @@ export async function removeRule(params: { key: number[] }) {
   return request('/api/category', {
     method: 'DELETE',
     data: {
-      ...params
+      ...params,
     },
   });
 }

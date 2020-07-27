@@ -1,20 +1,16 @@
 import React, { useState } from 'react';
 import { Form, Button, Input, InputNumber, Modal, Select } from 'antd';
 
-import { TableListItem } from '../data';
+import { CategoryEdit, CategoryItem } from '../data';
 
 export interface UpdateFormProps {
-  onCancel: (flag?: boolean, formVals?: Partial<TableListItem>) => void;
-  onSubmit: (values: Partial<TableListItem>) => void;
+  onCancel: (flag?: boolean, formVals?: Partial<CategoryItem>) => void;
+  onSubmit: (values: Partial<CategoryEdit>) => void;
   updateModalVisible: boolean;
-  values: Partial<TableListItem>;
+  values: Partial<CategoryItem>;
 }
 const FormItem = Form.Item;
 const { Option } = Select;
-
-export interface UpdateFormState {
-  formVals: Partial<TableListItem>;
-}
 
 const formLayout = {
   labelCol: { span: 7 },
@@ -22,11 +18,11 @@ const formLayout = {
 };
 
 const UpdateForm: React.FC<UpdateFormProps> = (props) => {
-  const [formVals, setFormVals] = useState<Partial<TableListItem>>({
+  const [formVals, setFormVals] = useState<Partial<CategoryEdit>>({
     id: props.values.id,
     name: props.values.name,
     group: props.values.group,
-    sort: props.values.sort
+    sort: props.values.sort,
   });
 
   const [form] = Form.useForm();
@@ -78,8 +74,8 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
       <>
         <Button onClick={() => handleUpdateModalVisible(false, values)}>取消</Button>
         <Button type="primary" onClick={() => handleNext()}>
-            完成
-          </Button>
+          完成
+        </Button>
       </>
     );
   };

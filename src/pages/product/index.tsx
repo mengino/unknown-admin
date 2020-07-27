@@ -7,7 +7,7 @@ import { CascaderOptionType } from 'antd/lib/cascader';
 import { UploadFile } from 'antd/lib/upload/interface';
 
 import { queryRule as categoryQuery } from '@/pages/category/service';
-import { TableListItem as categoryTableListItem } from '@/pages/category/data';
+import { CategoryItem } from '@/pages/category/data';
 
 import CreateForm from './components/CreateForm';
 import UpdateForm from './components/UpdateForm';
@@ -170,7 +170,7 @@ const ProductList: React.FC<{}> = () => {
     const fetchData = async () => {
       const { data } = await categoryQuery();
 
-      data.forEach((element: categoryTableListItem) => {
+      data.forEach((element: CategoryItem) => {
         category[element.group - 1].children?.push({
           value: element.id,
           label: element.name,

@@ -1,21 +1,19 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, message, Divider, InputNumber, Form } from 'antd';
+import { Button, message, Divider, Popconfirm } from 'antd';
 import React, { useState, useRef } from 'react';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
 
 import CreateForm from './components/CreateForm';
 import UpdateForm from './components/UpdateForm';
-import { TableListItem } from './data';
+import { CategorySearch, CategoryAdd, CategoryEdit, CategoryItem } from './data';
 import { queryRule, updateRule, addRule, removeRule } from './service';
-
-const FormItem = Form.Item;
 
 /**
  * 添加节点
  * @param fields
  */
-const handleAdd = async (fields: TableListItem) => {
+const handleAdd = async (fields: CategoryAdd) => {
   const hide = message.loading('正在添加');
   try {
     await addRule({ ...fields });
@@ -33,14 +31,14 @@ const handleAdd = async (fields: TableListItem) => {
  * 更新节点
  * @param fields
  */
-const handleUpdate = async (fields: Partial<TableListItem>) => {
+const handleUpdate = async (fields: Partial<CategoryEdit>) => {
   const hide = message.loading('正在配置');
   try {
     await updateRule({
       id: fields.id,
       name: fields.name,
       group: fields.group,
-      sort: fields.sort
+      sort: fields.sort,
     });
     hide();
 
@@ -57,7 +55,7 @@ const handleUpdate = async (fields: Partial<TableListItem>) => {
  *  删除节点
  * @param selectedRows
  */
-const handleRemove = async (selectedRows: TableListItem[]) => {
+const handleRemove = async (selectedRows: CategoryItem[]) => {
   const hide = message.loading('正在删除');
   if (!selectedRows) return true;
   try {
@@ -79,8 +77,8 @@ const TableList: React.FC<{}> = () => {
   const [updateModalVisible, handleUpdateModalVisible] = useState<boolean>(false);
   const [stepFormValues, setStepFormValues] = useState({});
   const actionRef = useRef<ActionType>();
-  const [selectedRowsState, setSelectedRows] = useState<TableListItem[]>([]);
-  const columns: ProColumns<TableListItem>[] = [
+  const [selectedRowsState, setSelectedRows] = useState<CategoryItem[]>([]);
+  const columns: ProColumns<CategoryItem>[] = [
     {
       title: '分类名称',
       dataIndex: 'name',
@@ -102,23 +100,31 @@ const TableList: React.FC<{}> = () => {
       rules: [
         {
           required: true,
-          message: '分类为必选项'
-        }
-      ]
+          message: '分类为必选项',
+        },
+      ],
     },
     {
       title: '排序权重',
       dataIndex: 'sort',
       valueType: 'digit',
       hideInSearch: true,
+      hideInForm: true,
       sorter: true,
-      renderFormItem: () => (
-        <FormItem
-          name="sort"
-        >
-          <InputNumber style={{ width: '100%' }} min={0} />
-        </FormItem>
-      )
+    },
+    {
+      title: '排序权重',
+      dataIndex: 'sort',
+      valueType: 'digit',
+      hideInSearch: true,
+      hideInTable: true,
+      rules: [
+        {
+          message: '请输入大于0的整数',
+          pattern: /^[+]{0,1}\d+/,
+          min: 0,
+        },
+      ],
     },
     {
       title: '修改时间',
@@ -126,7 +132,7 @@ const TableList: React.FC<{}> = () => {
       sorter: true,
       valueType: 'dateTime',
       hideInForm: true,
-      hideInSearch: true
+      hideInSearch: true,
     },
     {
       title: '创建时间',
@@ -135,7 +141,7 @@ const TableList: React.FC<{}> = () => {
       valueType: 'dateTime',
       hideInForm: true,
       hideInSearch: true,
-      defaultSortOrder: 'descend'
+      defaultSortOrder: 'descend',
     },
     {
       title: '操作',
@@ -152,16 +158,18 @@ const TableList: React.FC<{}> = () => {
             编辑
           </a>
           <Divider type="vertical" />
-          <a onClick={async () => {
-              if (confirm('确定要删除吗？')) {
-                await handleRemove([record]);
-                setSelectedRows([]);
-                actionRef.current?.reloadAndRest();
-              }
+          <Popconfirm
+            title="确定要删除吗?"
+            onConfirm={async () => {
+              await handleRemove([record]);
+              setSelectedRows([]);
+              actionRef.current?.reloadAndRest();
             }}
+            okText="确认"
+            cancelText="取消"
           >
-              删除
-          </a>
+            <a href="#">删除</a>
+          </Popconfirm>
         </>
       ),
     },
@@ -169,7 +177,7 @@ const TableList: React.FC<{}> = () => {
 
   return (
     <PageContainer>
-      <ProTable<TableListItem>
+      <ProTable<CategoryItem, CategorySearch>
         headerTitle="分类列表"
         actionRef={actionRef}
         rowKey="id"
@@ -206,7 +214,7 @@ const TableList: React.FC<{}> = () => {
         </FooterToolbar>
       )}
       <CreateForm onCancel={() => handleModalVisible(false)} modalVisible={createModalVisible}>
-        <ProTable<TableListItem, TableListItem>
+        <ProTable<CategoryItem, CategoryAdd>
           onSubmit={async (value) => {
             const success = await handleAdd(value);
             if (success) {

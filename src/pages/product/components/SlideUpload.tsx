@@ -53,7 +53,6 @@ const PicturesWall: React.FC<PicturesWallProps> = (props) => {
 
           return e.fileList;
         }}
-        // initialValue={fileList}
       >
         <Upload
           action="/api/upload"
