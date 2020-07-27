@@ -8,14 +8,14 @@ import { UploadFile } from 'antd/lib/upload/interface';
 export interface PicturesWallProps {
   name: string;
   num?: number;
-  value?: string[];
+  value?: UploadFile[];
 }
 
 const PicturesWall: React.FC<PicturesWallProps> = (props) => {
   const [previewVisible, setPreviewVisible] = useState<boolean>(false);
   const [previewImage, setPreviewImage] = useState<string>('');
   const [previewTitle, setPreviewTitle] = useState<string>('');
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [fileList, setFileList] = useState<UploadFile[]>(props.value || []);
 
   const getBase64 = (file: File | Blob): Promise<string | ArrayBuffer | null> => {
     return new Promise((resolve, reject) => {

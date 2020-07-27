@@ -74,11 +74,9 @@ const handleUpdate = async (fields: Partial<ProductEdit>) => {
       message: string;
     }>[];
 
-    const image: string = imageFile.response?.data.file_name as string;
+    const image: string = imageFile.response?.data.file_name || imageFile.name;
     const slide: string[] = [];
-    fields.slide?.map(
-      (value) => value.response !== undefined && slide.push(value.response.data.file_name),
-    );
+    fields.slide?.map((value) => slide.push(value.response?.data.file_name || value.name));
 
     await updateRule({
       id: fields.id,

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Button, Input, Modal, Select, Steps, Cascader, InputNumber } from 'antd';
 import { CascaderOptionType } from 'antd/lib/cascader';
+import { UploadFile } from 'antd/lib/upload/interface';
 
 import CoverImage from './CoverUpload';
 import PicturesWall from './SlideUpload';
@@ -51,12 +52,36 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
     },
   ]);
 
+  const slide: UploadFile[] = [];
+  props.values.slide?.forEach((element: string) => {
+    slide.push({
+      uid: element,
+      name: element,
+      status: 'done',
+      size: 0,
+      type: '',
+      url: element,
+    });
+  });
+
   const [formVals, setFormVals] = useState<Partial<ProductEdit>>({
     id: props.values.id,
     title: props.values.title,
     sort: props.values.sort,
-    // image: props.values.image,
-    // slide: props.values.slide,
+    image:
+      props.values.image !== undefined
+        ? [
+            {
+              uid: props.values.image,
+              name: props.values.image,
+              status: 'done',
+              size: 0,
+              type: '',
+              url: props.values.image,
+            },
+          ]
+        : [],
+    slide,
     category: [props.values.group as number, props.values.category_id as number],
     version: props.values.version,
     language: props.values.language,

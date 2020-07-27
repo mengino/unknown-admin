@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Upload, message, Form } from 'antd';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload';
@@ -6,29 +6,13 @@ import { UploadFile } from 'antd/lib/upload/interface';
 
 export interface CoverImageProps {
   name: string;
-  value?: string;
+  value?: UploadFile[];
 }
 
 const CoverImage: React.FC<CoverImageProps> = (props) => {
-  const [imageUrl, setImageUrl] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
-
-  useEffect(() => {
-    if (props.value !== undefined) {
-      setFileList([
-        {
-          uid: props.value,
-          size: 0,
-          type: '',
-          name: props.value,
-          status: 'done',
-          url: props.value,
-        },
-      ]);
-      setImageUrl('https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png');
-    }
-  }, []);
+  const [fileList, setFileList] = useState<UploadFile[]>(props.value || []);
+  const [imageUrl, setImageUrl] = useState<string>(fileList[0]?.url || '');
 
   const getBase64 = (
     img: File | Blob,
@@ -52,7 +36,6 @@ const CoverImage: React.FC<CoverImageProps> = (props) => {
   };
 
   const handleChange = (info: UploadChangeParam<UploadFile>) => {
-    console.log(info);
     if (info.file.status === 'uploading') {
       setLoading(true);
       return;
