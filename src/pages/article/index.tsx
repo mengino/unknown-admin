@@ -1,22 +1,42 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, message, Divider, Popconfirm } from 'antd';
-import React, { useState, useRef } from 'react';
+import { Button, Divider, message, Select, Popconfirm } from 'antd';
+import React, { useState, useEffect, useRef } from 'react';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
+import { LabeledValue } from 'antd/lib/select';
+import { UploadFile } from 'antd/lib/upload/interface';
+
+import { queryRule as categoryQuery } from '@/pages/category/service';
+import { CategoryItem } from '@/pages/category/data';
 
 import CreateForm from './components/CreateForm';
 import UpdateForm from './components/UpdateForm';
-import { CategorySearch, CategoryAdd, CategoryEdit, CategoryItem } from './data';
+import CoverImage from './components/CoverUpload';
+import SelectInput from './components/SelectInput';
+
+import { ArticleSearch, ArticleAdd, ArticleEdit, ArticleItem } from './data';
 import { queryRule, updateRule, addRule, removeRule } from './service';
+
+const { Option } = Select;
 
 /**
  * 添加节点
  * @param fields
  */
-const handleAdd = async (fields: CategoryAdd) => {
+const handleAdd = async (fields: ArticleAdd) => {
   const hide = message.loading('正在添加');
   try {
-    await addRule({ ...fields });
+    const [imageFile] = fields.image;
+
+    await addRule({
+      title: fields.title,
+      image: imageFile.response?.data.file_name as string,
+      category_id: fields.category_id,
+      product_id: fields.product_id,
+      sort: fields.sort,
+      content: fields.content,
+    });
+
     hide();
     message.success('添加成功');
     return true;
@@ -31,14 +51,23 @@ const handleAdd = async (fields: CategoryAdd) => {
  * 更新节点
  * @param fields
  */
-const handleUpdate = async (fields: Partial<CategoryEdit>) => {
+const handleUpdate = async (fields: Partial<ArticleEdit>) => {
   const hide = message.loading('正在配置');
   try {
+    const [imageFile] = fields.image as UploadFile<{
+      data: { file_name: string; url: string };
+      code: number;
+      message: string;
+    }>[];
+
     await updateRule({
       id: fields.id,
-      name: fields.name,
-      group: fields.group,
+      image: imageFile.response?.data.file_name || imageFile.name,
+      category_id: fields.category_id,
+      product_id: fields.product_id,
       sort: fields.sort,
+      title: fields.title,
+      content: fields.content,
     });
     hide();
 
@@ -55,7 +84,7 @@ const handleUpdate = async (fields: Partial<CategoryEdit>) => {
  *  删除节点
  * @param selectedRows
  */
-const handleRemove = async (selectedRows: CategoryItem[]) => {
+const handleRemove = async (selectedRows: ArticleItem[]) => {
   const hide = message.loading('正在删除');
   if (!selectedRows) return true;
   try {
@@ -72,37 +101,130 @@ const handleRemove = async (selectedRows: CategoryItem[]) => {
   }
 };
 
-const CategoryList: React.FC<{}> = () => {
+const ArticelList: React.FC<{}> = () => {
+  const [category, setCategory] = useState<LabeledValue[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data } = await categoryQuery();
+
+      data.forEach((element: CategoryItem) => {
+        category.push({
+          value: element.id,
+          label: element.name,
+        });
+      });
+
+      setCategory(category);
+    };
+
+    fetchData();
+  }, []);
+
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
   const [updateModalVisible, handleUpdateModalVisible] = useState<boolean>(false);
   const [stepFormValues, setStepFormValues] = useState({});
   const actionRef = useRef<ActionType>();
-  const [selectedRowsState, setSelectedRows] = useState<CategoryItem[]>([]);
-  const columns: ProColumns<CategoryItem>[] = [
+  const [selectedRowsState, setSelectedRows] = useState<ArticleItem[]>([]);
+  const columns: ProColumns<ArticleItem>[] = [
     {
-      title: '分类名称',
-      dataIndex: 'name',
+      title: '名称',
+      dataIndex: 'title',
       rules: [
         {
           required: true,
-          message: '分类名称为必填项',
+          message: '名称为必填项',
         },
       ],
     },
     {
-      title: '归属类别',
-      dataIndex: 'group',
-      valueEnum: new Map([
-        [1, { text: '游戏', status: 'Error' }],
-        [2, { text: '软件', status: 'Success' }],
-        [3, { text: '文章', status: 'Processing' }],
-      ]),
+      title: '封面图',
+      dataIndex: 'image',
+      valueType: 'avatar',
+      hideInSearch: true,
       rules: [
         {
           required: true,
-          message: '分类为必选项',
+          message: '请上传封面图',
         },
       ],
+      renderFormItem: (item) => <CoverImage name={item.dataIndex as string} />,
+    },
+    {
+      title: '分类',
+      dataIndex: 'category_id',
+      hideInTable: true,
+      hideInForm: true,
+      renderFormItem: () => (
+        <Select style={{ width: '100%' }} placeholder="请选择分类">
+          {category.map((element) => {
+            return (
+              <Option key={element.value} value={element.value}>
+                {element.label}
+              </Option>
+            );
+          })}
+        </Select>
+      ),
+    },
+    {
+      title: '分类',
+      dataIndex: 'category_id',
+      hideInSearch: true,
+      hideInTable: true,
+      rules: [
+        {
+          required: true,
+          message: '归属类别为必选项',
+        },
+      ],
+      renderFormItem: () => (
+        <Select style={{ width: '100%' }} placeholder="请选择分类">
+          {category.map((element) => {
+            return (
+              <Option key={element.value} value={element.value}>
+                {element.label}
+              </Option>
+            );
+          })}
+        </Select>
+      ),
+    },
+    {
+      title: '分类',
+      dataIndex: 'category_id',
+      valueType: 'text',
+      hideInForm: true,
+      hideInSearch: true,
+      // renderText: (_, record) => {
+      //   for (let i = 0; i < category.length; i += 1) {
+      //     const { value, label, children } = category[i];
+      //     if (value === record.group && children !== undefined) {
+      //       for (let j = 0; j < children.length; j += 1) {
+      //         if (children[j].value === record.category_id) {
+      //           return (
+      //             <>
+      //               {label} / {children[j].label}
+      //             </>
+      //           );
+      //         }
+      //       }
+      //     }
+      //   }
+
+      //   return '';
+      // },
+    },
+    {
+      title: '关联App',
+      dataIndex: 'product_id',
+      renderFormItem: (item) => (
+        <SelectInput
+          name={item.dataIndex as string}
+          placeholder="请输入关联App"
+          style={{ width: '100%' }}
+        />
+      ),
     },
     {
       title: '排序权重',
@@ -125,6 +247,13 @@ const CategoryList: React.FC<{}> = () => {
           min: 0,
         },
       ],
+    },
+    {
+      title: '详情',
+      dataIndex: 'content',
+      valueType: 'textarea',
+      hideInTable: true,
+      hideInSearch: true,
     },
     {
       title: '修改时间',
@@ -177,8 +306,8 @@ const CategoryList: React.FC<{}> = () => {
 
   return (
     <PageContainer>
-      <ProTable<CategoryItem, CategorySearch>
-        headerTitle="分类列表"
+      <ProTable<ArticleItem, ArticleSearch>
+        headerTitle="App列表"
         actionRef={actionRef}
         rowKey="id"
         toolBarRender={() => [
@@ -187,7 +316,17 @@ const CategoryList: React.FC<{}> = () => {
           </Button>,
         ]}
         options={false}
-        request={(params, sorter, filter) => queryRule({ ...params, sorter, filter })}
+        request={(params, sorter, filter) => {
+          return queryRule({
+            title: params.title,
+            category_id: params.category_id,
+            product_id: params.product_id,
+            pageSize: params.pageSize,
+            currentPage: params.current,
+            filter,
+            sorter,
+          });
+        }}
         columns={columns}
         rowSelection={{
           onChange: (_, selectedRows) => setSelectedRows(selectedRows),
@@ -202,7 +341,6 @@ const CategoryList: React.FC<{}> = () => {
           }
         >
           <Button
-            type="primary"
             onClick={async () => {
               await handleRemove(selectedRowsState);
               setSelectedRows([]);
@@ -211,16 +349,17 @@ const CategoryList: React.FC<{}> = () => {
           >
             批量删除
           </Button>
+          <Button type="primary">批量审批</Button>
         </FooterToolbar>
       )}
       <CreateForm onCancel={() => handleModalVisible(false)} modalVisible={createModalVisible}>
-        <ProTable<CategoryItem, CategoryAdd>
+        <ProTable<ArticleItem, ArticleAdd>
           onSubmit={async (value) => {
             const success = await handleAdd(value);
             if (success) {
               handleModalVisible(false);
               if (actionRef.current) {
-                actionRef.current.reloadAndRest();
+                actionRef.current.reload();
               }
             }
           }}
@@ -248,10 +387,11 @@ const CategoryList: React.FC<{}> = () => {
           }}
           updateModalVisible={updateModalVisible}
           values={stepFormValues}
+          category={category}
         />
       ) : null}
     </PageContainer>
   );
 };
 
-export default CategoryList;
+export default ArticelList;

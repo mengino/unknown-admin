@@ -57,70 +57,19 @@ export default defineConfig({
               name: 'category',
               icon: 'crown',
               component: './category',
-              // authority: ['admin'],
-              // routes: [
-              //   {
-              //     path: '/category/game',
-              //     name: 'game',
-              //     icon: 'smile',
-              //     component: './ListTableList/game',
-              //     authority: ['admin'],
-              //   },
-              //   {
-              //     path: '/category/software',
-              //     name: 'software',
-              //     icon: 'smile',
-              //     component: './ListTableList/software',
-              //     authority: ['admin'],
-              //   },
-              //   {
-              //     path: '/category/article',
-              //     name: 'article',
-              //     icon: 'smile',
-              //     component: './ListTableList/article',
-              //     authority: ['admin'],
-              //   },
-              // ],
             },
             {
               name: 'product',
               icon: 'table',
               path: '/product',
               component: './product',
-              // routes: [
-              //   {
-              //     path: '/product/game',
-              //     name: 'game',
-              //     icon: 'smile',
-              //     component: './ListTableList/app',
-              //   },
-              //   {
-              //     path: '/product/software',
-              //     name: 'software',
-              //     icon: 'smile',
-              //     component: './ListTableList/app',
-              //   },
-              // ],
             },
-            // {
-            //   name: 'article',
-            //   icon: 'table',
-            //   path: '/article',
-            //   routes: [
-            //     {
-            //       path: '/article/game',
-            //       name: 'game',
-            //       icon: 'smile',
-            //       component: './ListTableList/app',
-            //     },
-            //     {
-            //       path: '/article/software',
-            //       name: 'software',
-            //       icon: 'smile',
-            //       component: './ListTableList/app',
-            //     },
-            //   ],
-            // },
+            {
+              name: 'article',
+              icon: 'table',
+              path: '/article',
+              component: './article',
+            },
             {
               component: './404',
             },

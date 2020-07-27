@@ -2,7 +2,7 @@ import request from '@/utils/request';
 import { Query } from '@/services/base';
 import { ProductQuery, ProductCreate, ProductUpdate } from './data';
 
-export async function queryRule(params: ProductQuery & Query) {
+export async function queryRule(params?: ProductQuery & Query) {
   return request('/api/product', {
     params,
   });

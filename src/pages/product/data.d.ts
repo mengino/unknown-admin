@@ -8,8 +8,8 @@ export interface ProductSearch {
 
 export interface ProductQuery {
   title?: string;
-  group: number;
-  category_id: number;
+  group?: number;
+  category_id?: number;
 }
 
 export interface ProductAdd {
