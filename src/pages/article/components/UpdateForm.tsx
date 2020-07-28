@@ -107,7 +107,7 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
     if (currentStep === 2) {
       return (
         <FormItem className={styles.form} name="content" label="详情">
-          <RichTextEditor />
+          <RichTextEditor name="content" value={formVals.content} />
         </FormItem>
       );
     }

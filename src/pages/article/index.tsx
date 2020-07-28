@@ -61,6 +61,8 @@ const handleUpdate = async (fields: Partial<ArticleEdit>) => {
       message: string;
     }>[];
 
+    // console.log(fields.content);
+
     await updateRule({
       id: fields.id,
       image: imageFile.response?.data.file_name || imageFile.name,
@@ -243,7 +245,7 @@ const ArticelList: React.FC<{}> = () => {
       valueType: 'textarea',
       hideInTable: true,
       hideInSearch: true,
-      renderFormItem: () => <RichTextEditor />,
+      renderFormItem: (item) => <RichTextEditor name={item.dataIndex as string} />,
     },
     {
       title: '修改时间',
