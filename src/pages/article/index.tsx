@@ -13,6 +13,7 @@ import CreateForm from './components/CreateForm';
 import UpdateForm from './components/UpdateForm';
 import CoverImage from './components/CoverUpload';
 import SelectInput from './components/SelectInput';
+import RichTextEditor from './components/RichTextEditor';
 
 import { ArticleSearch, ArticleAdd, ArticleEdit, ArticleItem } from './data';
 import { queryRule, updateRule, addRule, removeRule } from './service';
@@ -242,6 +243,7 @@ const ArticelList: React.FC<{}> = () => {
       valueType: 'textarea',
       hideInTable: true,
       hideInSearch: true,
+      renderFormItem: () => <RichTextEditor />,
     },
     {
       title: '修改时间',

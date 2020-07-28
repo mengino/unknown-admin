@@ -4,6 +4,9 @@ import { LabeledValue } from 'antd/lib/select';
 
 import SelectInput from './SelectInput';
 import CoverImage from './CoverUpload';
+import RichTextEditor from './RichTextEditor';
+
+import styles from '../index.less';
 
 import { ArticleEdit, ArticleItem } from '../data.d';
 
@@ -14,13 +17,14 @@ export interface UpdateFormProps {
   values: Partial<ArticleItem>;
   category: LabeledValue[];
 }
+
 const FormItem = Form.Item;
 const { Step } = Steps;
 const { Option } = Select;
 
 const formLayout = {
-  labelCol: { span: 7 },
-  wrapperCol: { span: 13 },
+  labelCol: { span: 4 },
+  wrapperCol: { span: 18 },
 };
 
 const UpdateForm: React.FC<UpdateFormProps> = (props) => {
@@ -102,8 +106,8 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
     }
     if (currentStep === 2) {
       return (
-        <FormItem name="content" label="详情">
-          <Input.TextArea style={{ width: '100%' }} />
+        <FormItem className={styles.form} name="content" label="详情">
+          <RichTextEditor />
         </FormItem>
       );
     }
@@ -213,13 +217,14 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
 
   return (
     <Modal
-      width={640}
+      width={720}
       bodyStyle={{ padding: '32px 40px 48px' }}
       destroyOnClose
       title="编辑App"
       visible={updateModalVisible}
       footer={renderFooter()}
       onCancel={() => handleUpdateModalVisible()}
+      className={styles.updateForm}
     >
       <Steps style={{ marginBottom: 28 }} size="small" current={currentStep}>
         <Step title="基本信息" />

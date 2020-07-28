@@ -12,6 +12,7 @@ const CreateForm: React.FC<CreateFormProps> = (props) => {
 
   return (
     <Modal
+      width={720}
       destroyOnClose
       title="新建App"
       visible={modalVisible}
