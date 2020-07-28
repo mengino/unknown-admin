@@ -106,7 +106,7 @@ const ArticelList: React.FC<{}> = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data } = await categoryQuery();
+      const { data } = await categoryQuery({ group: 3 });
 
       data.forEach((element: CategoryItem) => {
         category.push({
@@ -154,24 +154,6 @@ const ArticelList: React.FC<{}> = () => {
       title: '分类',
       dataIndex: 'category_id',
       hideInTable: true,
-      hideInForm: true,
-      renderFormItem: () => (
-        <Select style={{ width: '100%' }} placeholder="请选择分类">
-          {category.map((element) => {
-            return (
-              <Option key={element.value} value={element.value}>
-                {element.label}
-              </Option>
-            );
-          })}
-        </Select>
-      ),
-    },
-    {
-      title: '分类',
-      dataIndex: 'category_id',
-      hideInSearch: true,
-      hideInTable: true,
       rules: [
         {
           required: true,
@@ -196,28 +178,27 @@ const ArticelList: React.FC<{}> = () => {
       valueType: 'text',
       hideInForm: true,
       hideInSearch: true,
-      // renderText: (_, record) => {
-      //   for (let i = 0; i < category.length; i += 1) {
-      //     const { value, label, children } = category[i];
-      //     if (value === record.group && children !== undefined) {
-      //       for (let j = 0; j < children.length; j += 1) {
-      //         if (children[j].value === record.category_id) {
-      //           return (
-      //             <>
-      //               {label} / {children[j].label}
-      //             </>
-      //           );
-      //         }
-      //       }
-      //     }
-      //   }
+      renderText: (_, record) => {
+        for (let i = 0; i < category.length; i += 1) {
+          const { value, label } = category[i];
+          if (value === record.category_id) {
+            return label;
+          }
+        }
 
-      //   return '';
-      // },
+        return '';
+      },
     },
     {
       title: '关联App',
       dataIndex: 'product_id',
+      hideInTable: true,
+      rules: [
+        {
+          required: true,
+          message: '关联App别为必选项',
+        },
+      ],
       renderFormItem: (item) => (
         <SelectInput
           name={item.dataIndex as string}
@@ -225,6 +206,13 @@ const ArticelList: React.FC<{}> = () => {
           style={{ width: '100%' }}
         />
       ),
+    },
+    {
+      title: '关联App',
+      dataIndex: 'product_id',
+      hideInForm: true,
+      hideInSearch: true,
+      renderText: (_, record) => record.product.title,
     },
     {
       title: '排序权重',

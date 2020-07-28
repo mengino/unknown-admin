@@ -42,6 +42,9 @@ export interface ArticleEdit {
   image: UploadFile<{ data: { file_name: string; url: string }; code: number; message: string }>[];
   category_id: number;
   product_id: number;
+  product: {
+    title: string;
+  };
 }
 
 export interface ArticleUpdate {
@@ -63,6 +66,9 @@ export interface ArticleItem {
   image: string;
   category_id: number;
   product_id: number;
+  product: {
+    title: string;
+  };
   updatedAt: Date;
   createdAt: Date;
 }

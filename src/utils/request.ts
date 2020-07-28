@@ -27,7 +27,7 @@ const codeMessage = {
 /**
  * 异常处理程序
  */
-const errorHandler = (error: { response: Response, data: BaseModel }): Response => {
+const errorHandler = (error: { response: Response; data: BaseModel }): Response => {
   const { response, data } = error;
   if (response && response.status) {
     // const errorText = codeMessage[response.status] || response.statusText;
@@ -55,30 +55,29 @@ const request = extend({
 });
 
 request.interceptors.request.use((url, options) => {
-  let token = localStorage.getItem("x-token");
+  const token = localStorage.getItem('x-token');
   const headers = {
     'Content-Type': 'application/json',
-    'Accept': 'application/json',  
+    Accept: 'application/json',
   };
 
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
-  } 
+  }
 
-  return (
-    {
-      url: url,
-      options: { ...options, headers: headers },
-    }
-  );
-})
+  return {
+    url,
+    options: { ...options, headers },
+  };
+});
 
 request.interceptors.response.use(async (response, options) => {
-  //拦截返回后的特殊处理
-  // if(response.data.code == 1000001){
-  //   console.log(response.data.msg)
+  // 拦截返回后的特殊处理
+  // if (response.data.code == 1000001) {
+  //   console.log(response.data.msg);
   //   //经过返回的code 提示 token 过时 、token校验失败，作相应跳转
   // }
+
   return response;
 });
 

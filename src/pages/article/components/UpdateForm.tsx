@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-// import { Form, Button, Input, Modal, Select, Steps, Cascader, InputNumber } from 'antd';
-import { Form, Button, Input, Modal, Steps, Cascader, InputNumber } from 'antd';
-import { CascaderOptionType } from 'antd/lib/cascader';
+import { Form, Button, Input, Modal, Steps, Select, InputNumber } from 'antd';
+import { LabeledValue } from 'antd/lib/select';
 
+import SelectInput from './SelectInput';
 import CoverImage from './CoverUpload';
 
 import { ArticleEdit, ArticleItem } from '../data.d';
@@ -12,11 +12,11 @@ export interface UpdateFormProps {
   onSubmit: (values: Partial<ArticleEdit>) => void;
   updateModalVisible: boolean;
   values: Partial<ArticleItem>;
-  category: CascaderOptionType[];
+  category: LabeledValue[];
 }
 const FormItem = Form.Item;
 const { Step } = Steps;
-// const { Option } = Select;
+const { Option } = Select;
 
 const formLayout = {
   labelCol: { span: 7 },
@@ -43,6 +43,7 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
         : [],
     category_id: props.values.category_id,
     product_id: props.values.product_id,
+    product: props.values.product,
     content: props.values.content,
   });
 
@@ -70,7 +71,6 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
     if (currentStep < 2) {
       forward();
     } else {
-      // handleUpdate({ ...formVals, ...fieldsValue });
       handleUpdate({
         id: formVals.id,
         title: formVals.title,
@@ -131,7 +131,31 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
             },
           ]}
         >
-          <Cascader options={category} placeholder="请选择分类" />
+          <Select style={{ width: '100%' }} placeholder="请选择分类">
+            {category.map((element) => {
+              return (
+                <Option key={element.value} value={element.value}>
+                  {element.label}
+                </Option>
+              );
+            })}
+          </Select>
+        </FormItem>
+        <FormItem
+          name="product_id"
+          label="关联App"
+          rules={[
+            {
+              required: true,
+              message: '关联App别为必选项',
+            },
+          ]}
+        >
+          <SelectInput
+            name="product_id"
+            initValue={[{ label: formVals.product?.title, value: formVals.product_id as number }]}
+            style={{ width: '100%' }}
+          />
         </FormItem>
         <FormItem
           name="sort"

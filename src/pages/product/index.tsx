@@ -171,7 +171,7 @@ const ProductList: React.FC<{}> = () => {
       const { data } = await categoryQuery();
 
       data.forEach((element: CategoryItem) => {
-        category[element.group - 1].children?.push({
+        category[element.group - 1]?.children?.push({
           value: element.id,
           label: element.name,
         });

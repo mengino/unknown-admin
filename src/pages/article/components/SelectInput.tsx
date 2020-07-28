@@ -10,11 +10,12 @@ const { Option } = Select;
 export interface SearchInputProps {
   name: string;
   placeholder?: string;
+  initValue?: LabeledValue[];
   style?: CSSProperties;
 }
 
 const SearchInput: React.FC<SearchInputProps> = (props) => {
-  const [data, setData] = useState<LabeledValue[]>([]);
+  const [data, setData] = useState<LabeledValue[]>(props.initValue || []);
   const [value, setValue] = useState<number>();
 
   let timeout: NodeJS.Timeout | null;
@@ -48,7 +49,7 @@ const SearchInput: React.FC<SearchInputProps> = (props) => {
   };
 
   return (
-    <Form.Item name={props.name}>
+    <Form.Item name={props.name} noStyle>
       <Select
         showSearch
         value={value}
