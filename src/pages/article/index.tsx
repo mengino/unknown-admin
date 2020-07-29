@@ -53,6 +53,7 @@ const handleAdd = async (fields: ArticleAdd) => {
  * @param fields
  */
 const handleUpdate = async (fields: Partial<ArticleEdit>) => {
+  console.log(fields);
   const hide = message.loading('正在配置');
   try {
     const [imageFile] = fields.image as UploadFile<{
@@ -245,7 +246,13 @@ const ArticelList: React.FC<{}> = () => {
       valueType: 'textarea',
       hideInTable: true,
       hideInSearch: true,
-      renderFormItem: (item) => <RichTextEditor name={item.dataIndex as string} />,
+      renderFormItem: (item) => (
+        <RichTextEditor
+          name={item.dataIndex as string}
+          value={formVals.content}
+          onChange={(v) => setFormVals({ ...formVals, content: v })}
+        />
+      ),
     },
     {
       title: '修改时间',

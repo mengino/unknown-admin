@@ -8,6 +8,7 @@ import 'react-quill/dist/quill.snow.css';
 export interface RichTextEditorProps {
   name: string;
   value?: string;
+  onChange: (v: string) => void;
 }
 
 const toolbarOptions = [
@@ -32,18 +33,16 @@ const toolbarOptions = [
 ];
 
 const RichTextEditor: React.FC<RichTextEditorProps> = (props) => {
-  const [value, setValue] = useState<string>(props.value || '');
+  // const [value, setValue] = useState<string>(props.value || '');
 
   return (
-    <Form.Item noStyle name={props.name}>
-      <ReactQuill
-        theme="snow"
-        placeholder="请输入详情"
-        modules={{ toolbar: toolbarOptions }}
-        value={value}
-        onChange={setValue}
-      />
-    </Form.Item>
+    <ReactQuill
+      theme="snow"
+      placeholder="请输入详情"
+      modules={{ toolbar: toolbarOptions }}
+      value={props.value}
+      onChange={props.onChange}
+    />
   );
 };
 
