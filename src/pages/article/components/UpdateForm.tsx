@@ -109,10 +109,9 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
         <FormItem className={styles.form} name="content" label="详情">
           <RichTextEditor
             name="content"
-            value={formVals.content}
+            value={formVals.content as string}
             onChange={(v) => setFormVals({ ...formVals, content: v })}
           />
-          ,
         </FormItem>
       );
     }

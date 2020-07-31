@@ -1,13 +1,11 @@
-import React, { useState } from 'react';
-
-import { Form } from 'antd';
+import React from 'react';
 
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
 export interface RichTextEditorProps {
   name: string;
-  value?: string;
+  value: string;
   onChange: (v: string) => void;
 }
 
@@ -32,18 +30,14 @@ const toolbarOptions = [
   // ['clean'],
 ];
 
-const RichTextEditor: React.FC<RichTextEditorProps> = (props) => {
-  // const [value, setValue] = useState<string>(props.value || '');
-
-  return (
-    <ReactQuill
-      theme="snow"
-      placeholder="请输入详情"
-      modules={{ toolbar: toolbarOptions }}
-      value={props.value}
-      onChange={props.onChange}
-    />
-  );
-};
+const RichTextEditor: React.FC<RichTextEditorProps> = (props) => (
+  <ReactQuill
+    theme="snow"
+    placeholder="请输入详情"
+    modules={{ toolbar: toolbarOptions }}
+    value={props.value}
+    onChange={props.onChange}
+  />
+);
 
 export default RichTextEditor;

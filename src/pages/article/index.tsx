@@ -246,13 +246,15 @@ const ArticelList: React.FC<{}> = () => {
       valueType: 'textarea',
       hideInTable: true,
       hideInSearch: true,
-      renderFormItem: (item) => (
-        <RichTextEditor
-          name={item.dataIndex as string}
-          value={formVals.content}
-          onChange={(v) => setFormVals({ ...formVals, content: v })}
-        />
-      ),
+      renderFormItem: (item, config, form) => {
+        return (
+          <RichTextEditor
+            name={item.dataIndex as string}
+            value={config.value || ''}
+            onChange={(v) => form.setFieldsValue({ content: v })}
+          />
+        );
+      },
     },
     {
       title: '修改时间',
