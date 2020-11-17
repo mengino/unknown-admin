@@ -2,7 +2,7 @@
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.112.0/containers/typescript-node-12
 {
 	"name": "unknown-admin",
-	"image": "node",
+	"image": "mengino/my-vsc-node",
 
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
@@ -30,5 +30,5 @@
 	},
 
     // Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "yarn config set registry https://registry.npm.taobao.org/ && npm install -g yarn && yarn install"
+	"postCreateCommand": "yarn install"
 }
