@@ -30,5 +30,5 @@
 	},
 
     // Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "echo 'fs.inotify.max_user_watches=524288' >> /etc/sysctl.conf && sysctl -p && yarn install"
+	"postCreateCommand": "yarn install"
 }
