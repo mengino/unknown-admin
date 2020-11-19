@@ -22,12 +22,7 @@
 	// "forwardPorts": [],
 
 	// Uncomment to connect as a non-root user. See https://aka.ms/vscode-remote/containers/non-root.
-	// "remoteUser": "node"
-
-	// 环境变量
-    "containerEnv": {
-        "TZ": "Asia/Shanghai"
-	},
+	"remoteUser": "node",
 
     // Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "yarn install"
