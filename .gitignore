@@ -39,4 +39,5 @@ screenshot
 
 build
 
-/.devcontainer
+.devcontainer
+.devcontainer.json
